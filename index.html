@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>同舟健康 · 产品雏形</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ 侧边栏 ============ -->
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="brandmark">同</div>
+      <div class="brand-text">
+        <div class="brandname">同舟健康</div>
+        <div class="brandname-en">TONGZHOU · 雏形演示</div>
+      </div>
+    </div>
+
+    <nav id="nav">
+      <button class="nav-item active" data-view="home">
+        <svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg>首页
+      </button>
+      <button class="nav-item" data-view="circle">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v10H9l-5 4z"/><path d="M8 10h8M8 13h5"/></svg>同舟圈
+      </button>
+      <button class="nav-item" data-view="match">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/></svg>病友匹配
+      </button>
+      <button class="nav-item" data-view="guide">
+        <svg viewBox="0 0 24 24"><path d="M12 21s-6.2-5.4-6.2-10.2a6.2 6.2 0 1 1 12.4 0C18.2 15.6 12 21 12 21z"/><circle cx="12" cy="10.6" r="2.1"/></svg>同舟就医通
+      </button>
+      <button class="nav-item" data-view="record">
+        <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9.5 9h5M9.5 12.5h5M9.5 16h3"/></svg>我的档案
+      </button>
+      <button class="nav-item" data-view="companion">
+        <svg viewBox="0 0 24 24"><path d="M12 4a6.5 6.5 0 0 1 6.5 6.5c0 3.4-2.4 5.2-3.4 6.6-.6.8-.6 1.4-.6 2.4h-5c0-1 0-1.6-.6-2.4-1-1.4-3.4-3.2-3.4-6.6A6.5 6.5 0 0 1 12 4z"/><path d="M10 21.5h4"/></svg>同舟智伴
+      </button>
+      <button class="nav-item" data-view="guard">
+        <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5.2c0 4.8-3.3 7.9-7 9-3.7-1.1-7-4.2-7-9V6z"/><path d="M9.2 11.6l2 2 3.6-3.8"/></svg>同舟守护
+      </button>
+    </nav>
+
+    <div id="userChip" class="user-chip" title="点击编辑我的档案">
+      <div class="avatar" id="userAvatar">舟</div>
+      <div class="user-meta">
+        <div class="user-name" id="userNick">未登录</div>
+        <div class="user-cond" id="userCond">完成引导后开启</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ 主内容 ============ -->
+  <main id="main">
+
+    <!-- 首页 -->
+    <section id="view-home" class="view active">
+      <div class="view-head">
+        <div>
+          <h2 id="homeGreeting">你好，同舟人</h2>
+          <p class="sub" id="homeSub">让经验找到人，让求医路不再孤单</p>
+        </div>
+        <span class="chip chip-dim">雏形演示 · 数据为虚构示例</span>
+      </div>
+      <div id="homeStats" class="stat-row"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>快捷入口</h3></div>
+          <div id="homeActions" class="quick-actions"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>今日提醒</h3><span class="chip" id="homeRemindCount"></span></div>
+          <div id="homeReminders" class="reminder-mini"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>同圈最新经验</h3><button class="btn btn-ghost" data-goto="circle">进入同舟圈 →</button></div>
+        <div id="homeFeed" class="post-list"></div>
+      </div>
+      <div class="disclaimer">同舟为病友经验与信息分享平台，所有内容仅供健康参考，不构成诊疗建议。用药与治疗方案请务必遵循执业医师指导。</div>
+    </section>
+
+    <!-- 同舟圈 -->
+    <section id="view-circle" class="view">
+      <div class="view-head">
+        <div>
+          <h2>同舟圈</h2>
+          <p class="sub">真实病友经验，AI 提炼要点 · 按病症分圈</p>
+        </div>
+        <button class="btn btn-primary" id="btnNewPost">＋ 发布分享</button>
+      </div>
+      <div id="circleTabs" class="tabs"></div>
+      <div id="circleFeed" class="post-list"></div>
+    </section>
+
+    <!-- 病友匹配 -->
+    <section id="view-match" class="view">
+      <div class="view-head">
+        <div>
+          <h2>病友匹配</h2>
+          <p class="sub">同病症 · 同阶段 · 同城市，AI 语义匹配同路人</p>
+        </div>
+        <div class="match-filter">
+          <select id="matchStageFilter" class="select">
+            <option value="">全部阶段</option>
+            <option>确诊期</option>
+            <option>治疗期</option>
+            <option>康复期</option>
+          </select>
+        </div>
+      </div>
+      <div id="myConditionBar"></div>
+      <div id="matchGrid" class="peer-grid"></div>
+    </section>
+
+    <!-- 就医通 -->
+    <section id="view-guide" class="view">
+      <div class="view-head">
+        <div>
+          <h2>同舟就医通</h2>
+          <p class="sub">病友口碑 · 费用参考 · AI 核验标注</p>
+        </div>
+        <input id="guideSearch" class="input" type="search" placeholder="搜索医院 / 科室 / 药品…">
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-gtab="hospital">医院</button>
+        <button class="tab" data-gtab="med">药品</button>
+        <select id="guideSort" class="select select-inline">
+          <option value="rating">按病友口碑</option>
+          <option value="cost">按费用从低到高</option>
+        </select>
+      </div>
+      <div id="guideGrid" class="guide-grid"></div>
+      <div class="disclaimer">费用为病友分享的区间参考，因个体方案与地区差异会有浮动，请以医院实际收费为准。“AI 核验”表示信息经多来源交叉比对，不构成推荐。</div>
+    </section>
+
+    <!-- 我的档案 -->
+    <section id="view-record" class="view">
+      <div class="view-head">
+        <div>
+          <h2>我的档案</h2>
+          <p class="sub">报告 · 用药 · 复诊，一站式病程管理</p>
+        </div>
+        <div>
+          <button class="btn btn-ghost" id="btnAddReport">＋ 示例报告</button>
+          <button class="btn btn-primary" id="btnAiSummary">AI 生成病情摘要</button>
+        </div>
+      </div>
+      <div id="recordProfile"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>检查报告</h3></div>
+          <div id="reportList" class="report-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>用药清单</h3><button class="btn btn-ghost" id="btnAddMed">＋ 添加</button></div>
+          <div id="medList" class="med-list"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>复诊提醒</h3></div>
+        <div id="remindList" class="remind-list"></div>
+      </div>
+      <div id="aiSummaryBox"></div>
+    </section>
+
+    <!-- 同舟智伴 -->
+    <section id="view-companion" class="view">
+      <div class="view-head">
+        <div>
+          <h2>同舟智伴</h2>
+          <p class="sub">你的 AI 病友管家 · 理解病情，匹配经验</p>
+        </div>
+        <button class="btn btn-ghost" id="btnClearChat">清空对话</button>
+      </div>
+      <div class="chat-wrap card">
+        <div id="chatWindow" class="chat-window"></div>
+        <div id="chatChips" class="chat-chips"></div>
+        <div class="chat-input-row">
+          <input id="chatInput" class="input" type="text" placeholder="向智伴提问：如“帮我找同阶段病友”“XX医院怎么样”“这个药多少钱”…">
+          <button class="btn btn-primary" id="btnChatSend">发送</button>
+        </div>
+        <div class="chat-foot">演示环境：智伴回复由本地规则模拟，非真实大模型；仅供健康参考，不构成诊疗建议。</div>
+      </div>
+    </section>
+
+    <!-- 同舟守护 -->
+    <section id="view-guard" class="view">
+      <div class="view-head">
+        <div>
+          <h2>同舟守护</h2>
+          <p class="sub">让信任被持续守护</p>
+        </div>
+      </div>
+      <div id="guardCards" class="grid-3"></div>
+      <div class="card">
+        <div class="card-head"><h3>AI 技术底座</h3></div>
+        <div class="aistack">
+          <span class="lb">已应用</span>
+          <span class="t">大语言模型 LLM</span><span class="t">检索增强生成 RAG</span><span class="t">语义向量匹配</span>
+          <span class="t">多模态报告识别</span><span class="t">医学知识图谱</span><span class="t">Agent 智能体</span><span class="t">隐私计算</span>
+        </div>
+        <p class="muted-note">雏形阶段以上能力由本地规则与预置数据模拟；正式版将接入真实模型与审核体系。</p>
+      </div>
+      <div class="disclaimer">同舟所呈现内容为病友经验与公开信息整理（本雏形全部为虚构演示数据），仅供健康参考，不构成诊疗建议；用药与治疗方案请务必遵循执业医师指导。如遇紧急情况请立即拨打 120。</div>
+    </section>
+
+  </main>
+</div>
+
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+<div id="onboardRoot"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
