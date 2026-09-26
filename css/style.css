@@ -181,6 +181,14 @@ button{ font-family:inherit; }
 .post-act.liked{ color:var(--red); }
 .post-act.liked svg{ fill:var(--red); stroke:var(--red); }
 .post-tags{ display:flex; gap:6px; margin-top:9px; flex-wrap:wrap; }
+.visit-line{
+  display:flex; align-items:center; gap:5px;
+  font-size:11px; color:var(--acc-soft); margin-top:7px; letter-spacing:.02em;
+  background:rgba(139,124,246,.08); border:1px solid rgba(139,124,246,.18);
+  border-radius:8px; padding:4px 9px; width:fit-content; max-width:100%;
+}
+.visit-inputs{ display:flex; gap:8px; flex-wrap:wrap; }
+.visit-inputs .input{ flex:1; min-width:140px; padding:8px 11px; font-size:12px; }
 
 .ai-card{
   margin-top:11px; border:1px solid rgba(110,231,247,.3); border-radius:12px;

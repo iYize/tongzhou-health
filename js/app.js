@@ -246,6 +246,8 @@
         '<div class="post-time">' + esc(p.time) + '</div>' +
       '</div>' +
       '<div class="post-title">' + esc(p.title) + '</div>' +
+      (function(){ var v = [p.hospital, p.dept, p.doctor].filter(Boolean).join(' · ');
+        return v ? '<div class="visit-line">🏥 就诊于：' + esc(v) + '</div>' : ''; })() +
       '<div class="post-body clamped">' + esc(p.body) + '</div>' +
       '<div class="post-foot">' +
         '<button class="post-act likeBtn' + (liked ? ' liked' : '') + '" data-like="' + p.id + '">' +
@@ -335,6 +337,12 @@
         '<div class="form-row"><label>选择圈子</label><select class="select" id="npCircle">' + options + '</select></div>' +
         '<div class="form-row"><label>标题</label><input class="input" id="npTitle" maxlength="40" placeholder="一句话说清这篇经验的主题"></div>' +
         '<div class="form-row"><label>正文（写清方案/费用/建议，能帮到更多人）</label><textarea id="npBody" placeholder="如：我做了什么治疗、花了多少、有什么建议…&#10;请勿发布广告、募捐与夸大宣传内容"></textarea></div>' +
+        '<div class="form-row"><label>就诊信息（选填，病友最关心）：医院 / 科室 / 医生</label>' +
+          '<div class="visit-inputs">' +
+            '<input class="input" id="npHospital" maxlength="30" placeholder="医院，如：中国医学科学院皮肤病医院">' +
+            '<input class="input" id="npDept" maxlength="20" placeholder="科室，如：皮肤科">' +
+            '<input class="input" id="npDoctor" maxlength="20" placeholder="医生（虚构演示可用昵称）">' +
+          '</div></div>' +
         '<div class="form-row"><label>标签（选填）</label>' +
           '<div class="choice-grid" id="npTags">' +
             ['治疗经历', '费用清单', '就医攻略', '用药交流'].map(t => '<button class="choice" data-tag="' + t + '">' + t + '</button>').join('') +
@@ -355,7 +363,10 @@
       state.myPosts.unshift({
         id: 'mine_' + Date.now(), circle: $('#npCircle', m).value,
         author: state.profile.nick || '我', time: nowLabel(),
-        likes: 0, tags: Array.from(tags), title: title, body: body, mine: true
+        likes: 0, tags: Array.from(tags), title: title, body: body, mine: true,
+        hospital: $('#npHospital', m).value.trim(),
+        dept: $('#npDept', m).value.trim(),
+        doctor: $('#npDoctor', m).value.trim()
       });
       circleFilter = $('#npCircle', m).value;
       save(); closeModal(); renderCircle();
@@ -397,6 +408,7 @@
         '<div class="peer-info">' +
           '<div class="peer-name">' + esc(p.nick) + '<span class="chip">' + esc(p.cond) + '</span><span class="chip chip-dim">' + esc(p.stage) + '</span></div>' +
           '<div class="peer-bio">' + esc(p.bio) + '</div>' +
+          '<div class="visit-line">🏥 ' + ([p.hospital, p.dept, p.doctor].filter(Boolean).join(' · ') || '就诊信息待补充') + '</div>' +
           '<div class="peer-tags">' +
             '<span class="chip chip-dim">' + esc(p.city) + ' · ' + esc(p.age) + '</span>' +
             p.tags.map(t => '<span class="chip">' + esc(t) + '</span>').join('') +
@@ -420,6 +432,7 @@
     const m = openModal(
       '<h3>向 ' + esc(p.nick) + ' 打个招呼</h3>' +
       '<div class="modal-sub">' + esc(p.cond) + ' · ' + esc(p.stage) + ' · ' + esc(p.city) + ' · 帮到 ' + p.helpful + ' 人</div>' +
+      '<div class="modal-sub" style="color:var(--acc-soft)">🏥 就诊于：' + esc([p.hospital, p.dept, p.doctor].filter(Boolean).join(' · ') || '未填写') + '</div>' +
       '<div class="modal-body">' +
         '<div class="form-row"><label>选择问候语（可修改）</label>' +
         '<div class="choice-grid" id="ctPresets">' + presets.map(t => '<button class="choice' + (t === presets[0] ? ' sel' : '') + '">' + esc(t) + '</button>').join('') + '</div></div>' +
@@ -578,7 +591,11 @@
       '<div style="flex:1"><div style="font-size:16px;font-weight:900">' + esc(p.nick || '未命名') + '</div>' +
       '<div class="profile-tags">' +
         (p.cond ? '<span class="chip">' + esc(p.cond) + '</span><span class="chip">' + esc(p.stage) + '</span>' : '<span class="chip chip-dim">尚未完成引导</span>') +
-        '<span class="chip chip-dim">本地存储 · 隐私分级</span></div></div>' +
+        '<span class="chip chip-dim">本地存储 · 隐私分级</span></div>' +
+      '<div style="flex:1.2;min-width:0">' +
+        '<div style="font-size:10.5px;color:var(--faint);letter-spacing:.1em;margin-bottom:4px">常就诊</div>' +
+        '<div class="visit-line" style="margin:0">' + esc([p.hospital, p.dept, p.doctor].filter(Boolean).join(' · ') || '在“编辑资料”中填写') + '</div>' +
+      '</div>' +
       '<button class="btn btn-sm" id="editProfile">编辑资料</button></div>';
 
     $('#editProfile').addEventListener('click', () => {
@@ -591,7 +608,10 @@
           '<div class="form-row"><label>阶段</label><select class="select" id="epStage">' +
             DB.stages.map(s => '<option' + (s === p.stage ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></div>' +
           '<div class="form-row"><label>所在城市（用于同城匹配）</label><select class="select" id="epCity">' +
-            ['上海', '北京', '广州', '杭州', '南京', '成都'].map(c => '<option' + (c === p.city ? ' selected' : '') + '>' + c + '</option>').join('') + '</select></div>' +
+            ['上海', '北京', '广州', '杭州', '南京', '成都', '武汉'].map(c => '<option' + (c === p.city ? ' selected' : '') + '>' + c + '</option>').join('') + '</select></div>' +
+          '<div class="form-row"><label>常就诊的医院</label><input class="input" id="epHospital" value="' + esc(p.hospital || '') + '" maxlength="30" placeholder="如：中国医学科学院皮肤病医院"></div>' +
+          '<div class="form-row"><label>科室</label><input class="input" id="epDept" value="' + esc(p.dept || '') + '" maxlength="20" placeholder="如：皮肤科"></div>' +
+          '<div class="form-row"><label>常就诊的医生（选填）</label><input class="input" id="epDoctor" value="' + esc(p.doctor || '') + '" maxlength="20" placeholder="如：宋知夏 副主任医师"></div>' +
         '</div>' +
         '<div class="modal-foot"><button class="btn" id="epCancel">取消</button><button class="btn btn-primary" id="epSave">保存</button></div>');
       $('#epCancel', m).addEventListener('click', closeModal);
@@ -600,6 +620,9 @@
         p.cond = $('#epCond', m).value;
         p.stage = $('#epStage', m).value;
         p.city = $('#epCity', m).value;
+        p.hospital = $('#epHospital', m).value.trim();
+        p.dept = $('#epDept', m).value.trim();
+        p.doctor = $('#epDoctor', m).value.trim();
         state.onboarded = true;
         save(); closeModal(); renderUser(); renderRecord();
         toast('资料已更新，匹配结果将随之变化');
@@ -686,7 +709,8 @@
         '\n\n可以去「病友匹配」页给 TA 打个招呼。匹配依据：病症一致 + 阶段相同 + 同城加权。';
     }
     if (/医院|哪家|挂号|就诊|科室/.test(t)) {
-      const key = cond === '乳腺癌' ? '乳腺' : cond === '2型糖尿病' ? '内分泌' : cond === '高血压' ? '高血压' : cond === '甲状腺结节' ? '甲状腺' : cond === '腰椎间盘突出' ? '脊柱' : cond === '哮喘' ? '呼吸' : cond === '焦虑抑郁' ? '精神' : '消化';
+      const deptMap = { '乳腺癌':'乳腺', '2型糖尿病':'内分泌', '高血压':'高血压', '甲状腺结节':'甲状腺', '腰椎间盘突出':'脊柱', '哮喘':'呼吸', '焦虑抑郁':'精神', '慢性胃炎':'消化', '痤疮':'皮肤', '玫瑰痤疮':'皮肤', '慢性荨麻疹':'皮肤', '特应性皮炎':'皮肤', '强直性脊柱炎':'风湿', '痛风':'风湿', '溃疡性结肠炎':'消化', '子宫内膜异位症':'妇科', '偏头痛':'神经' };
+      const key = deptMap[cond] || '消化';
       const hits = DB.hospitals.filter(h => h.depts.join('').indexOf(key) >= 0);
       const list = (hits.length ? hits : DB.hospitals).slice(0, 2);
       return '病友口碑较好的相关医院：\n' +
@@ -718,6 +742,24 @@
     }
     if (/你好|hello|hi|在吗/.test(t)) {
       return '在的在的～可以问我：找病友、查医院、看药价、聊心情，或者输入“复诊带什么”。';
+    }
+    const condKeys = {
+      acne: ['痤疮','痘痘','异维','粉刺','闭口'], rosacea: ['玫瑰痤疮','潮红','红血丝'],
+      urticaria: ['荨麻疹','风团'], ad: ['特应性皮炎','湿疹'],
+      as: ['强直','晨僵','脊柱炎'], uc: ['结肠炎','血便','溃结'],
+      ems: ['内异','子宫内膜异位','巧克力囊肿','痛经'], migraine: ['偏头痛','头痛','先兆'],
+      gout: ['痛风','尿酸']
+    };
+    for (const cid in condKeys) {
+      if (condKeys[cid].some(k => t.indexOf(k) >= 0)) {
+        const posts = allPosts().filter(x => x.circle === cid);
+        if (!posts.length) break;
+        const top = posts.slice().sort((a, b) => ((b.aiSummary ? 1 : 0) - (a.aiSummary ? 1 : 0)) || (b.likes - a.likes))[0];
+        const lines = ['「' + circleName(cid) + '」圈里讨论最多的经验：', '《' + top.title + '》（' + top.author + '，' + top.likes + ' 共鸣）'];
+        if (top.aiSummary) Object.keys(top.aiSummary).forEach(k => { lines.push('· ' + k + '：' + top.aiSummary[k]); });
+        lines.push('\n完整经验见「同舟圈」；个体差异大，具体诊疗请遵专科医生。');
+        return lines.join('\n');
+      }
     }
     return '这个问题我先记下来了。在雏形里我可以帮你：\n· 「找病友」匹配同阶段病友\n· 「查医院」看口碑与费用\n· 「药价」查医保与替代方案\n· 「聊心情」我会认真听\n\n也可以直接点下方快捷问题试试。正式版将接入真实大模型+医学知识库（RAG）回答。';
   }
