@@ -9,6 +9,7 @@
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   const circleName = (id) => { const c = DB.circles.find(c => c.id === id); return c ? c.name : id; };
+  const condDept = (name) => { const c = DB.circles.find(c => c.name === name); return c ? c.dept : ''; };
   const nowLabel = () => '刚刚';
 
   function save() { try { localStorage.setItem('tongzhou_state_v1', JSON.stringify(state)); } catch (e) {} }
@@ -51,49 +52,67 @@
   }
   function closeModal() { $('#modalRoot').classList.remove('open'); $('#modalRoot').innerHTML = ''; }
 
-  /* ---------- 引导 ---------- */
+  /* ---------- 引导（科室 → 病症 → 阶段） ---------- */
   function renderOnboard() {
     const root = $('#onboardRoot');
-    const circles = DB.circles.map(c =>
-      '<button class="ob-choice" data-cond="' + esc(c.name) + '">' + esc(c.name) + '<small>' + esc(c.desc) + '</small></button>'
+    const depts = DB.depts.map(d =>
+      '<button class="ob-choice" data-dept="' + esc(d.name) + '"><b>' + esc(d.name) + '</b><small>' + esc(d.desc) + '</small></button>'
     ).join('');
     root.innerHTML =
       '<div class="onboard">' +
-        '<div class="ob-step">STEP 1 / 2 · 选择你的同舟圈</div>' +
-        '<h3>你在关心哪种健康状况？</h3>' +
-        '<p class="ob-sub">选择后为你匹配同病症、同阶段的病友与经验（可随时在“我的档案”修改）</p>' +
-        '<div class="ob-grid" id="obCond">' + circles + '</div>' +
+        '<div class="ob-step">STEP 1 / 3 · 选择科室</div>' +
+        '<h3>你想在哪个科室找同路人？</h3>' +
+        '<p class="ob-sub">先选科室，再选具体病症，匹配更精准（之后可在“我的档案”修改）</p>' +
+        '<div class="ob-grid" id="obDept">' + depts + '</div>' +
         '<div class="ob-foot"><span class="ob-note">本演示不收集任何真实健康数据，全部保存在你的浏览器本地</span>' +
         '<button class="btn btn-primary" id="obNext" disabled>下一步</button></div>' +
       '</div>';
     root.classList.add('open');
-    let picked = '';
+    let dept = '';
+    $('#obDept', root).addEventListener('click', (e) => {
+      const b = e.target.closest('.ob-choice'); if (!b) return;
+      $$('#obDept .ob-choice', root).forEach(x => x.classList.remove('sel'));
+      b.classList.add('sel');
+      dept = b.dataset.dept;
+      $('#obNext', root).disabled = false;
+    });
+    $('#obNext', root).addEventListener('click', () => renderOnboardCond(root, dept));
+  }
+
+  function renderOnboardCond(root, dept) {
+    const list = DB.circles.filter(c => c.dept === dept);
+    root.querySelector('.onboard').innerHTML =
+      '<div class="ob-step">STEP 2 / 3 · 选择病症 · ' + esc(dept) + '</div>' +
+      '<h3>具体是哪种情况？</h3>' +
+      '<p class="ob-sub">选择后为你匹配同病症、同阶段的病友与经验</p>' +
+      '<div class="ob-grid" id="obCond">' + list.map(c =>
+        '<button class="ob-choice" data-cond="' + esc(c.name) + '"><b>' + esc(c.name) + '</b><small>' + esc(c.desc) + '</small></button>').join('') + '</div>' +
+      '<div class="ob-foot"><button class="btn" id="obBack">← 重选科室</button>' +
+      '<button class="btn btn-primary" id="obNext" disabled>下一步</button></div>';
+    let cond = '';
     $('#obCond', root).addEventListener('click', (e) => {
       const b = e.target.closest('.ob-choice'); if (!b) return;
       $$('#obCond .ob-choice', root).forEach(x => x.classList.remove('sel'));
       b.classList.add('sel');
-      picked = b.dataset.cond;
+      cond = b.dataset.cond;
       $('#obNext', root).disabled = false;
     });
-    $('#obNext', root).addEventListener('click', () => {
-      state.profile.cond = picked;
-      renderOnboardStep2(root);
-    });
+    $('#obBack', root).addEventListener('click', () => renderOnboard());
+    $('#obNext', root).addEventListener('click', () => renderOnboardFinal(root, dept, cond));
   }
 
-  function renderOnboardStep2(root) {
+  function renderOnboardFinal(root, dept, cond) {
     root.querySelector('.onboard').innerHTML =
-      '<div class="ob-step">STEP 2 / 2 · 你所在的阶段</div>' +
+      '<div class="ob-step">STEP 3 / 3 · 所处阶段 · ' + esc(dept) + ' · ' + esc(cond) + '</div>' +
       '<h3>目前在哪个阶段？</h3>' +
       '<p class="ob-sub">用于匹配同阶段病友，经验与提醒也会按阶段调整</p>' +
       '<div class="ob-grid" id="obStage">' +
-        DB.stages.map((s, i) =>
-          '<button class="ob-choice" data-stage="' + s + '" data-idx="' + i + '">' + s +
-          '<small>' + ['刚确诊，信息很迷茫', '正在治疗或随访中', '病情稳定逐步恢复'][i] + '</small></button>').join('') +
+        DB.stages.map((st, i) =>
+          '<button class="ob-choice" data-stage="' + st + '"><b>' + st + '</b><small>' + ['刚确诊，信息很迷茫', '正在治疗或随访中', '病情稳定逐步恢复'][i] + '</small></button>').join('') +
       '</div>' +
       '<div class="form-row" style="margin-top:16px;"><label>给自己起一个昵称（社区匿名使用）</label>' +
       '<input class="input" id="obNick" maxlength="12" placeholder="如：江畔小满"></div>' +
-      '<div class="ob-foot"><span class="ob-note">昵称仅存于本地浏览器</span>' +
+      '<div class="ob-foot"><button class="btn" id="obBack">← 上一步</button>' +
       '<button class="btn btn-primary" id="obDone" disabled>进入同舟 →</button></div>';
     let stage = '';
     $('#obStage', root).addEventListener('click', (e) => {
@@ -105,9 +124,11 @@
     });
     $('#obNick', root).addEventListener('input', checkReady);
     function checkReady() { $('#obDone', root).disabled = !(stage && $('#obNick', root).value.trim()); }
+    $('#obBack', root).addEventListener('click', () => renderOnboardCond(root, dept));
     $('#obDone', root).addEventListener('click', () => {
       state.profile.stage = stage;
       state.profile.nick = $('#obNick', root).value.trim();
+      state.profile.cond = cond;
       state.onboarded = true;
       save();
       root.classList.remove('open');
@@ -138,7 +159,7 @@
   function renderUser() {
     $('#userNick').textContent = state.profile.nick || '未登录';
     $('#userCond').textContent = state.onboarded
-      ? (state.profile.cond + ' · ' + state.profile.stage) : '完成引导后开启';
+      ? (condDept(state.profile.cond) + ' · ' + state.profile.cond + ' · ' + state.profile.stage) : '完成引导后开启';
     $('#userAvatar').textContent = (state.profile.nick || '舟').charAt(0);
   }
 
@@ -389,7 +410,7 @@
     $('#myConditionBar').innerHTML =
       '<div class="my-cond-bar"><span style="font-size:18px">🤝</span>' +
       '<div style="flex:1"><b>我的病症圈：' + esc(state.profile.cond || '未设置') + ' · ' + esc(state.profile.stage || '') + '</b>' +
-      '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + (c ? esc(c.desc) + ' · 同圈 ' + formatMembers(c.members) + ' 人' : '先在引导中选择病症') + '</div></div>' +
+      '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + (c ? esc(c.dept + ' · ') + esc(c.desc) + ' · 同圈 ' + formatMembers(c.members) + ' 人' : '先在引导中选择病症') + '</div></div>' +
       '<span class="chip chip-cyan">AI 语义匹配 · 演示</span></div>';
 
     const stage = $('#matchStageFilter').value;
@@ -603,8 +624,11 @@
         '<h3>编辑资料</h3><div class="modal-sub">仅保存在本地浏览器</div>' +
         '<div class="modal-body">' +
           '<div class="form-row"><label>昵称</label><input class="input" id="epNick" value="' + esc(p.nick) + '" maxlength="12"></div>' +
-          '<div class="form-row"><label>关注的病症圈</label><select class="select" id="epCond">' +
-            DB.circles.map(c => '<option' + (c.name === p.cond ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') + '</select></div>' +
+          '<div class="form-row"><label>关注的病症圈（按科室分组）</label><select class="select" id="epCond">' +
+            (function(){ const g = {}; DB.circles.forEach(c => (g[c.dept] = g[c.dept] || []).push(c));
+              return Object.keys(g).map(d => '<optgroup label="' + esc(d) + '">' +
+                g[d].map(c => '<option' + (c.name === p.cond ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') + '</optgroup>').join(''); })() +
+            '</select></div>' +
           '<div class="form-row"><label>阶段</label><select class="select" id="epStage">' +
             DB.stages.map(s => '<option' + (s === p.stage ? ' selected' : '') + '>' + s + '</option>').join('') + '</select></div>' +
           '<div class="form-row"><label>所在城市（用于同城匹配）</label><select class="select" id="epCity">' +

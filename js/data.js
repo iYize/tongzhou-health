@@ -1,24 +1,38 @@
 /* ============ 同舟健康 · 雏形演示数据（全部为虚构示例） ============ */
 window.DB = {
 
+  depts: [
+    { id:'skin',    name:'皮肤科',     desc:'痘痘 · 荨麻疹 · 湿疹等皮肤困扰' },
+    { id:'endo',    name:'内分泌科',   desc:'血糖 · 甲状腺 · 代谢问题' },
+    { id:'cardio',  name:'心血管内科', desc:'血压 · 血管健康' },
+    { id:'rheum',   name:'风湿免疫科', desc:'关节 · 脊柱 · 尿酸' },
+    { id:'gi',      name:'消化内科',   desc:'胃肠 · 肠道 · 幽门螺杆菌' },
+    { id:'breast',  name:'乳腺外科',   desc:'乳腺肿瘤 · 结节 · 手术' },
+    { id:'psych',   name:'精神心理科', desc:'情绪 · 睡眠 · 心理困扰' },
+    { id:'resp',    name:'呼吸内科',   desc:'哮喘 · 慢咳 · 呼吸问题' },
+    { id:'ortho',   name:'骨科',       desc:'颈腰椎 · 关节 · 运动损伤' },
+    { id:'gyn',     name:'妇科',       desc:'月经 · 内异症 · 女性健康' },
+    { id:'neuro',   name:'神经内科',   desc:'头痛 · 头晕 · 神经问题' }
+  ],
+
   circles: [
-    { id: 'breast',    name: '乳腺癌',     desc: '治疗经验 · 方案参考 · 康复陪伴', members: 12860 },
-    { id: 'diabetes',  name: '2型糖尿病',  desc: '血糖管理 · 饮食运动 · 用药交流', members: 20340 },
-    { id: 'hypertension', name: '高血压',  desc: '血压记录 · 生活方式 · 复诊随访', members: 31200 },
-    { id: 'thyroid',   name: '甲状腺结节', desc: '检查解读 · 随访节奏 · 术前术后', members: 9760 },
-    { id: 'lumbar',    name: '腰椎间盘突出', desc: '康复锻炼 · 就医科室 · 术前沟通', members: 15400 },
-    { id: 'mood',      name: '焦虑抑郁',   desc: '匿名树洞 · 就诊鼓励 · 康复故事', members: 18620 },
-    { id: 'asthma',    name: '哮喘',       desc: '吸入装置 · 诱因管理 · 急性应对', members: 8340 },
-    { id: 'gastritis', name: '慢性胃炎',   desc: '饮食调理 · 幽门螺杆菌 · 复查提醒', members: 12980 },
-    { id: 'acne',      name: '痤疮',       desc: '反复痘痘 · 异维A酸 · 刷酸与护肤', members: 22400 },
-    { id: 'rosacea',   name: '玫瑰痤疮',   desc: '潮红管理 · 修复屏障 · 长期随访', members: 4210 },
-    { id: 'urticaria', name: '慢性荨麻疹', desc: '反复风团 · 抗组胺调整 · 寻找诱因', members: 8760 },
-    { id: 'ad',        name: '特应性皮炎', desc: '保湿修复 · 生物制剂 · 复发管理', members: 11230 },
-    { id: 'as',        name: '强直性脊柱炎', desc: '生物制剂 · 功能锻炼 · 慢病管理', members: 6890 },
-    { id: 'uc',        name: '溃疡性结肠炎', desc: '黏膜愈合 · 饮食管理 · 复发预防', members: 5320 },
-    { id: 'ems',       name: '子宫内膜异位症', desc: '疼痛管理 · 术前术后 · 备孕支持', members: 7640 },
-    { id: 'migraine',  name: '偏头痛',     desc: '头痛日记 · 预防用药 · 诱因排查', members: 14300 },
-    { id: 'gout',      name: '痛风',       desc: '降酸达标 · 急性处理 · 饮食真相', members: 16800 }
+    { id: 'breast', dept: '乳腺外科',    name: '乳腺癌',     desc: '治疗经验 · 方案参考 · 康复陪伴', members: 12860 },
+    { id: 'diabetes', dept: '内分泌科',  name: '2型糖尿病',  desc: '血糖管理 · 饮食运动 · 用药交流', members: 20340 },
+    { id: 'hypertension', dept: '心血管内科', name: '高血压',  desc: '血压记录 · 生活方式 · 复诊随访', members: 31200 },
+    { id: 'thyroid', dept: '内分泌科',   name: '甲状腺结节', desc: '检查解读 · 随访节奏 · 术前术后', members: 9760 },
+    { id: 'lumbar', dept: '骨科',    name: '腰椎间盘突出', desc: '康复锻炼 · 就医科室 · 术前沟通', members: 15400 },
+    { id: 'mood', dept: '精神心理科',      name: '焦虑抑郁',   desc: '匿名树洞 · 就诊鼓励 · 康复故事', members: 18620 },
+    { id: 'asthma', dept: '呼吸内科',    name: '哮喘',       desc: '吸入装置 · 诱因管理 · 急性应对', members: 8340 },
+    { id: 'gastritis', dept: '消化内科', name: '慢性胃炎',   desc: '饮食调理 · 幽门螺杆菌 · 复查提醒', members: 12980 },
+    { id: 'acne', dept: '皮肤科',      name: '痤疮',       desc: '反复痘痘 · 异维A酸 · 刷酸与护肤', members: 22400 },
+    { id: 'rosacea', dept: '皮肤科',   name: '玫瑰痤疮',   desc: '潮红管理 · 修复屏障 · 长期随访', members: 4210 },
+    { id: 'urticaria', dept: '皮肤科', name: '慢性荨麻疹', desc: '反复风团 · 抗组胺调整 · 寻找诱因', members: 8760 },
+    { id: 'ad', dept: '皮肤科',        name: '特应性皮炎', desc: '保湿修复 · 生物制剂 · 复发管理', members: 11230 },
+    { id: 'as', dept: '风湿免疫科',        name: '强直性脊柱炎', desc: '生物制剂 · 功能锻炼 · 慢病管理', members: 6890 },
+    { id: 'uc', dept: '消化内科',        name: '溃疡性结肠炎', desc: '黏膜愈合 · 饮食管理 · 复发预防', members: 5320 },
+    { id: 'ems', dept: '妇科',       name: '子宫内膜异位症', desc: '疼痛管理 · 术前术后 · 备孕支持', members: 7640 },
+    { id: 'migraine', dept: '神经内科',  name: '偏头痛',     desc: '头痛日记 · 预防用药 · 诱因排查', members: 14300 },
+    { id: 'gout', dept: '风湿免疫科',      name: '痛风',       desc: '降酸达标 · 急性处理 · 饮食真相', members: 16800 }
   ],
 
   stages: ['确诊期', '治疗期', '康复期'],
